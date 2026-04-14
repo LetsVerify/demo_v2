@@ -47,7 +47,7 @@ contract DeployIssuerVerifier is Script {
 
         // 4. Extra parameters for IssuerVerifier
         bytes32 ctx = keccak256("BBS_DID_APP_V2");
-        string memory tokenURI = "ipfs://QmYourIpfsHashHere"; // Your metadata
+        string memory tokenURI = "https://github.com/LetsVerify/demo_v2"; // Your metadata
         string memory tokenName = "LetsVerify";
         string memory tokenSymbol = "LetV";
 
