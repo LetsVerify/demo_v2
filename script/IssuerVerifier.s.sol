@@ -24,7 +24,7 @@ contract DeployIssuerVerifier is Script {
         BBSMath.G2Point memory pk = BBSMath.G2Point({
             x: [uint256(21078157932976788369811386224298604876283678095953300695193627580536184663017), 3260306681974474822604563648776815682816091416970286175188033719997424721292], 
             y: [uint256(21872932232854780648641376857253831029627783545362812619304934661720191529610), 15974835493233460998260511752626128505010865937675816409903067489306439600529]
-        }); 
+        }); // sk = // 1328790040692576325258580129229001772890358018148159309458854770206210226319
         
         BBSMath.G1Point[] memory bases = new BBSMath.G1Point[](6);
         bases[0] = BBSMath.G1Point({x: 1240703902419481545648986623473745806820787811594483762868555478458184666010, y: 18256809644617940920254137422873442228473372063501986223346572230462785524439});
@@ -47,9 +47,9 @@ contract DeployIssuerVerifier is Script {
 
         // 4. Extra parameters for IssuerVerifier
         bytes32 ctx = keccak256("BBS_DID_APP_V2");
-        string memory tokenURI = "ipfs://QmYourIpfsHashHere"; // 替换成实际的 IPFS 元数据链接
-        string memory tokenName = "My BBS Identity";
-        string memory tokenSymbol = "MBID";
+        string memory tokenURI = "ipfs://QmYourIpfsHashHere"; // Your metadata
+        string memory tokenName = "LetsVerify";
+        string memory tokenSymbol = "LetV";
 
         // 5. Deploy the IssuerVerifier
         IssuerVerifier issuerVerifier = new IssuerVerifier(
