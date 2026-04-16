@@ -10,13 +10,15 @@ import "./BBSMath.sol";
 contract BBSVerifier {
     using BBSMath for BBSMath.G1Point;
 
-    BBSMath.G1Point public G1;
-    BBSMath.G2Point internal G2;
     BBSMath.G2Point internal publicKey;
     BBSMath.G1Point[] public publicBases; // H0, H1, ... H_null, H_gamma
 
-    function getG2() public view returns (BBSMath.G2Point memory) {
-        return G2;
+    function getG2() public pure returns (BBSMath.G2Point memory) {
+        return BBSMath.g2Generator();
+    }
+
+    function getG1() public pure returns (BBSMath.G1Point memory) {
+        return BBSMath.g1Generator();
     }
 
     function getPublicKey() public view returns (BBSMath.G2Point memory) {
@@ -33,19 +35,17 @@ contract BBSVerifier {
     }
 
     constructor(
-        BBSMath.G1Point memory _g1,
-        BBSMath.G2Point memory _g2,
         BBSMath.G2Point memory _publicKey,
         BBSMath.G1Point[] memory _publicBases
     ) {
-        G1 = _g1;
-        G2 = _g2;
         publicKey = _publicKey;
         // Deep copy bases
         for(uint i=0; i<_publicBases.length; i++){
             publicBases.push(_publicBases[i]);
         }
     }
+
+    event DebugChallenge(uint256 c);
 
     /**
      * @notice Verify the NIZK proof over disclosed messages
@@ -57,39 +57,46 @@ contract BBSVerifier {
         Proof calldata proof,
         uint256[] calldata disclosedMessages,
         bytes32 ctx
-    ) public view returns (bool) {
+    ) public returns (bool) {
         require(disclosedMessages.length == publicBases.length - 1, "Length mismatch");
 
         // 1. Recompute challenge c'
         // c' = H(ctx || m_J || A_bar || B_bar || U)
-        uint256 c = uint256(keccak256(abi.encodePacked(
+        bytes memory encodedMsgs;
+        for (uint i = 0; i < disclosedMessages.length; i++) {
+            encodedMsgs = abi.encodePacked(encodedMsgs, disclosedMessages[i]);
+        }
+        bytes memory payload = abi.encodePacked(
             ctx,
-            disclosedMessages,
+            encodedMsgs,
             proof.A_bar.x, proof.A_bar.y,
             proof.B_bar.x, proof.B_bar.y,
             proof.U.x, proof.U.y
-        ))) % BBSMath.P; // Challenge must be mapped back to the field
+        );
+        
+        uint256 c = uint256(keccak256(payload)) % BBSMath.FR_MODULUS; // Challenge must be mapped back to the field
+        emit DebugChallenge(c);
 
-        // 2. Pairing check: e(A_bar, PK) == e(B_bar, G2)
-        bool pairingOk = BBSMath.pairing(proof.A_bar, publicKey, proof.B_bar, G2);
+        // 2. Pairing check: e(A_bar, PK) * e(-B_bar, G2) == 1 => e(A_bar, PK) == e(B_bar, G2)
+        bool pairingOk = BBSMath.pairing2(proof.A_bar, publicKey, BBSMath.negate(proof.B_bar), getG2());
         if (!pairingOk) return false;
 
         // 3. Homomorphic check
         // left = U + c*B_bar
-        BBSMath.G1Point memory left = proof.U.g1add(proof.B_bar.g1mul(c));
+        BBSMath.G1Point memory left = proof.U.plus(proof.B_bar.scalarMul(c));
 
         // compute C_J = G1 + sum(m_j * H_j)
-        BBSMath.G1Point memory CJ = G1;
+        BBSMath.G1Point memory CJ = getG1();
         for (uint i = 0; i < disclosedMessages.length; i++) {
-            CJ = CJ.g1add(publicBases[i].g1mul(disclosedMessages[i]));
+            CJ = CJ.plus(publicBases[i].scalarMul(disclosedMessages[i]));
         }
 
         // right = s*C_J + t*A_bar + u_gamma*H_gamma
-        BBSMath.G1Point memory right = CJ.g1mul(proof.s);
-        right = right.g1add(proof.A_bar.g1mul(proof.t));
+        BBSMath.G1Point memory right = CJ.scalarMul(proof.s);
+        right = right.plus(proof.A_bar.scalarMul(proof.t));
         
         BBSMath.G1Point memory H_gamma = publicBases[publicBases.length - 1];
-        right = right.g1add(H_gamma.g1mul(proof.u_gamma));
+        right = right.plus(H_gamma.scalarMul(proof.u_gamma));
 
         return (left.x == right.x && left.y == right.y);
     }

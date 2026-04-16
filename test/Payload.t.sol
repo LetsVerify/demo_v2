@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "forge-std/Test.sol";
+import "../src/BBSMath.sol";
+import "../src/BBSVerifier.sol";
+
+contract PayloadTest is Test {
+    bytes32 public constant CTX = bytes32("LetsVerify"); 
+
+    function testPayload() public {
+        uint256[] memory messages = new uint256[](5);
+        messages[0] = 48305238028827234457057068308976830949311451167141786071899284143701496669988;
+        messages[1] = 30362564611297414121344052595118041020684015714278959822893592029797294529055;
+        messages[2] = 89017634352366059964332753369766654038457760534865200995547152036320389318152;
+        messages[3] = 89017634352366059964332753369766654038457760534865200995547152036320389318152;
+        messages[4] = 192837465; // m_null
+
+        BBSVerifier.Proof memory proof = BBSVerifier.Proof({
+            A_bar: BBSMath.G1Point(6983097370489183843445744690803410449335857353723611212866399434449838737717, 3648066633893875445904566922173856516184451834991074591291208461110286394304),
+            B_bar: BBSMath.G1Point(19044848704310865689458345071541711268186542538395623868436593178513340450809, 10589001052176906773948322897754366977270428907338024358604697813098499998768),
+            U: BBSMath.G1Point(1153773998433955495191492039201978270450101673584470200138339954914711002069, 14294831966682210557612360051974400923820804217010428288507346330843171566464),
+            s: 16432670838624915500001552438124794131842072901073767317646690254744435976218,
+            t: 17225178891850288722840838281737147865442210078243486119657261870161263607074,
+            u_gamma: 7340301898096023666065685937090837812235560759681590244954457103844271355070
+        });
+
+        bytes memory encodedMsgs;
+        for (uint i = 0; i < messages.length; i++) {
+            encodedMsgs = abi.encodePacked(encodedMsgs, messages[i]);
+        }
+        bytes memory payload = abi.encodePacked(
+            CTX,
+            encodedMsgs,
+            proof.A_bar.x, proof.A_bar.y,
+            proof.B_bar.x, proof.B_bar.y,
+            proof.U.x, proof.U.y
+        );
+
+        console.logBytes(payload);
+        
+        uint256 challengeNum = uint256(keccak256(payload)) % BBSMath.FR_MODULUS;
+        console.log("Solidity Challenge: %s", challengeNum);
+    }
+}
