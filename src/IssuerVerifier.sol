@@ -126,7 +126,7 @@ contract IssuerVerifier is ERC721, IERC5484 {
     }
 
     /**
-     * @notice Returns the URI pointing to the IPFS metadata/image for this token
+     * @notice Returns the URI pointing to the metadata/image for this token
      */
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         // OpenZeppelin v5 check for token existence
