@@ -40,8 +40,8 @@ contract DeployIssuerVerifier is Script {
         expectedConstraints[3] = 1464662865008959075347130388737553683672515905673906344791000457739484483820;// Empty
 
         // 4. Extra parameters for IssuerVerifier
-        bytes32 ctx =  bytes32("LetsVerify");
-        string memory tokenURI = "https://raw.githubusercontent.com/LetsVerify/demo_v2/refs/heads/main/icon.png";
+        bytes32 ctx = bytes32("LetsVerify");
+        string memory tokenURI = "ipfs://QmVXzY1QerAQ8y7QPMaPdPke82s5r6hyuYhYaMHfgNYZNg";
         string memory tokenName = "LetsVerify";
         string memory tokenSymbol = "LetV";
 

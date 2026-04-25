@@ -80,17 +80,39 @@ cast send $ISSUER_VERIFIER "stashNullifier(bytes32)" $N_HASH --rpc-url $RPC_URL 
 2. Call on-chain status
 
 ```shell
+# Query the required constraints for the credential
+cast call $ISSUER_VERIFIER "readConstraint()(uint256[])" --rpc-url $RPC_URL
+
 # Query the Nullifier existence
 cast call $ISSUER_VERIFIER "keyExist(bytes32)(bool)" $N_HASH --rpc-url $RPC_URL
 
 # Query if a user already has the token
-cast call $ISSUER_VERIFIER "hasToken(address)(bool)" 0x1234000000000000000000000000000000000000 --rpc-url $RPC_URL
+cast call $ISSUER_VERIFIER "hasToken(address)(bool)" $TARGET_ADDRESS --rpc-url $RPC_URL
 
 # Query the ctx value in the contract
 cast call $ISSUER_VERIFIER "ctx()(bytes32)" --rpc-url $RPC_URL
 
 # Query the tokenURI value in the contract
 cast call $ISSUER_VERIFIER "tokenURI(uint256)(string)" $TOKENID --rpc-url $RPC_URL
+```
+
+3. Deployer methods
+
+```shell
+# deployer burn the tokens
+cast send $ISSUER_VERIFIER "burn(uint256)" $TOKENID --rpc-url $RPC_URL --private-key $PRIVATE_KEY
+```
+
+4. Delete the nullifier
+
+```shell
+cast send $ISSUER_VERIFIER "removeNullifier(bytes32)" $N_HASH --rpc-url $RPC_URL --private-key $PRIVATE_KEY
+```
+
+5. Deploy could burn the tokens
+
+```shell
+cast send $ISSUER_VERIFIER "burn(uint256)" $TOKENID --rpc-url $RPC_URL --private-key $PRIVATE_KEY
 ```
 
 ## Frontend Documentation
@@ -113,22 +135,33 @@ npm run dev
 ## Sepolia Testnet Deployed Contract Address
 
 ```shell
-BBSVerifier deployed at: 0x5FE6c32a55823Eb87f8e1b3C15cFf1dAdC90AB0D
-IssuerVerifier deployed at: 0x69AF9718542D79ff47d2513C209F9F2D224c6Fa8
+== Logs ==
+  BBSVerifier deployed at: 0xCE5e36a94C099f84248aEA51fdfa8C36fFcFCFc8
+  IssuerVerifier deployed at: 0x8D9d696193C04E4d9CfeBD01f522862A88202AC3
 ==========================
+
+Chain 11155111
+
+Estimated gas price: 1.544771218 gwei
+
+Estimated total gas used for script: 6287846
+
+Estimated amount required: 0.009713283524016428 ETH
+
+==========================
+
 ##### sepolia
-✅  [Success] Hash: 0x212f63a1f428335a8e9f720656dc62feb8cd09c6ccea42637252347394393988
-Contract Address: 0x5FE6c32a55823Eb87f8e1b3C15cFf1dAdC90AB0D
-Block: 10672706
-Paid: 0.00007007772665222 ETH (1631140 gas * 0.042962423 gwei)
-
+✅  [Success] Hash: 0x705671122f5a3d73b75de8198101fbd6c545a5124786fc9168acf3216057fcc3
+Contract Address: 0xCE5e36a94C099f84248aEA51fdfa8C36fFcFCFc8
+Block: 10728264
+Paid: 0.001254746881012816 ETH (1631128 gas * 0.769251022 gwei)
 
 ##### sepolia
-✅  [Success] Hash: 0x795e3b5b023f80a50a228d730cefb1656f582c0216ec2297bb4a966280ab0984
-Contract Address: 0x69AF9718542D79ff47d2513C209F9F2D224c6Fa8
-Block: 10672706
-Paid: 0.000131285345527014 ETH (3055818 gas * 0.042962423 gwei)
+✅  [Success] Hash: 0x6bfd237d115d7f161d6c7a6270763d7ed171e39e19e3a9c51d575e6c35f719ef
+Contract Address: 0x8D9d696193C04E4d9CfeBD01f522862A88202AC3
+Block: 10728265
+Paid: 0.002773569281864544 ETH (3205677 gas * 0.865205472 gwei)
 
-✅ Sequence #1 on sepolia | Total Paid: 0.000201363072179234 ETH (4686958 gas * avg 0.042962423 gwei)
+✅ Sequence #1 on sepolia | Total Paid: 0.00402831616287736 ETH (4836805 gas * avg 0.817228247 gwei)
 ==========================
 ```

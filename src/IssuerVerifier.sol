@@ -58,6 +58,13 @@ contract IssuerVerifier is ERC721, IERC5484 {
     }
 
     /**
+     * @notice Step 1: User read the constraints for the credential they want to obtain. 
+     */
+    function readConstraint() external view returns (uint256[] memory) {
+        return expectedConstraints;
+    }
+
+    /**
      * @notice Step 2: User pre-commits their nullifier to the contract
      * N = Hash(UserAddr || m_null)
      */
@@ -65,6 +72,15 @@ contract IssuerVerifier is ERC721, IERC5484 {
         require(!keyExist[N], "Nullifier already stashed");
         keyExist[N] = true;
         emit NullifierPreCommitted(N, msg.sender);
+    }
+
+    /**
+     * @notice Debug only
+     */
+    function removeNullifier(bytes32 N) external {
+        require(keyExist[N], "Nullifier not stashed");
+        require(!usedNullifiers[N], "Nullifier already used, cannot remove");
+        keyExist[N] = false;
     }
 
     /**
@@ -118,7 +134,9 @@ contract IssuerVerifier is ERC721, IERC5484 {
     }
 
     function burn(uint256 tokenId) external {
+        address owner = _ownerOf(tokenId);
         _burn(tokenId);
+        hasToken[owner] = false;
     }
 
     function burnAuth(uint256 /* tokenId */) external pure returns (BurnAuth) {

@@ -1,0 +1,12 @@
+{
+  "name": "LetsVerify",
+  "description": "You verifiable credential.",
+  "image": "https://raw.githubusercontent.com/LetsVerify/demo_v2/refs/heads/main/icon.png",
+  "external_url": "https://klizz.online",
+  "attributes": [
+    {
+      "trait_type": "Rarity",
+      "value": "Rare"
+    }
+  ]
+}

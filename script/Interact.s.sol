@@ -9,17 +9,17 @@ import "../src/BBSVerifier.sol";
 contract InteractScript is Script {
     function run() external {
         // Load the deployed IssuerVerifier contract
-        IssuerVerifier issuerVerifier = IssuerVerifier(0x69AF9718542D79ff47d2513C209F9F2D224c6Fa8);        
+        IssuerVerifier issuerVerifier = IssuerVerifier(0x784891b3a09e03086bD6F91af752eb6bF67023d9);        
         vm.startBroadcast();
 
-    // 1. Test stashNullifier
-    // Read user address from environment.
-    // Set USER_ADDRESS in your shell before running the script.
-    address user = vm.envAddress("USER_ADDRESS");
-    require(user != address(0), "USER_ADDRESS not set in env");
-    console.log("Using user address from env:");
-    console.logAddress(user);
-    uint256 m_null = 192837465;
+        // 1. Test stashNullifier
+        // Read user address from environment.
+        // Set USER_ADDRESS in your shell before running the script.
+        address user = vm.envAddress("USER_ADDRESS");
+        require(user != address(0), "USER_ADDRESS not set in env");
+        console.log("Using user address from env:");
+        console.logAddress(user);
+        uint256 m_null = 192837465;
         bytes32 N = keccak256(abi.encodePacked(user, m_null));
         
         console.log("Stashing Nullifier...");
