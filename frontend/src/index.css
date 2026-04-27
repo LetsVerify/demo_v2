@@ -443,6 +443,18 @@
   color: #bfe3ff;
 }
 
+.card h2 {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+  color: #bfe3ff;
+}
+
+.card h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  color: #bfe3ff;
+}
+
 .admin-toggle-right {
   display: inline-flex;
   align-items: center;

@@ -458,7 +458,7 @@ export default function App() {
           <div>
             <h1>LetsVerify Mint Console</h1>
             <p className="subtitle">
-              The frontend generates NIZK proofs in real time and directly mints through the on-chain IssuerVerifier contract.
+              Proejct URL: <a href="http://github.com/letsverify">http://github.com/letsverify</a>            
             </p>
             <p className="privacy-note">{PRIVACY_STATEMENT}</p>
           </div>
